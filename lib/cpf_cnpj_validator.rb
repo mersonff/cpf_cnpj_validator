@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
-require_relative "cpf_cnpj_validator/version"
-
-module CpfCnpjValidator
-  class Error < StandardError; end
-  # Your code goes here...
-end
+require "English"
+require "optparse"
+require "cpf_cnpj_validator/generator"
+require "cpf_cnpj_validator/version"
+require "cpf"
+require "cnpj"
