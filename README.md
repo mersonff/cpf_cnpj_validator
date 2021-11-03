@@ -1,8 +1,6 @@
 # CpfCnpjValidator
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/cpf_cnpj_validator`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Same as https://github.com/fnando/cpf_cnpj (all credits to him). Changes only in tests. From Minitest to RSpec.
 
 ## Installation
 
@@ -22,22 +20,57 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Ruby API
 
-## Development
+This library has the same API for both CNPJ/CPF, so only one of them is
+documented below.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```ruby
+require "cpf_cnpj"
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+CPF.valid?(number)    # Check if a CPF is valid
+CPF.generate          # Generate a random CPF number
+CPF.generate(true)    # Generate a formatted number
 
-## Contributing
+cpf = CPF.new(number)
+cpf.formatted         # Return formatted CPF (xxx.xxx.xxx-xx)
+cpf.stripped          # Return stripped CPF (xxxxxxxxxxx)
+cpf.valid?            # Check if CPF is valid
+```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/cpf_cnpj_validator. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/cpf_cnpj_validator/blob/master/CODE_OF_CONDUCT.md).
+#### Strict Validation
 
-## License
+By default, validations will strip any characters that aren't numbers. This
+means that `532#####820------857\n96` is considered a valid number. To perform a
+strict validation use `strict: true`.
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+```ruby
+CPF.valid?(number, strict: true)
+```
 
-## Code of Conduct
+### Command-line
 
-Everyone interacting in the CpfCnpjValidator project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/cpf_cnpj_validator/blob/master/CODE_OF_CONDUCT.md).
+This library gives you two binaries: `cpf` and `cnpj`.
+
+    $ cpf --check 532.820.857-96
+    $ $?
+    0
+
+    $ cpf --check 53282085796
+    $ $?
+    0
+
+    $ cpf --format 53282085796
+    532.820.857-96
+
+    $ cpf --strip 532.820.857-96
+    53282085796
+
+    $ cpf --generate
+    417.524.931-17
+
+    $ cpf --generate --strip
+    76001454809
+
+    $ echo 76001454809 | cpf -f
+    760.014.548-09
